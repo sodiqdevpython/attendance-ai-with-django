@@ -1,0 +1,183 @@
+{% extends 'index.html' %} {% load static %} {% block content %}
+<div class="container">
+	<div class="page-inner">
+		<!-- Statistikalar: Kartalar -->
+		<div class="row">
+			<!-- Jami xodimlar kartasi -->
+			<div class="col-sm-6 col-md-4">
+				<div class="card card-stats card-round">
+					<div class="card-body">
+						<div class="row align-items-center">
+							<div class="col-icon">
+								<div
+									class="icon-big text-center icon-primary bubble-shadow-small"
+								>
+									<i class="fas fa-users"></i>
+								</div>
+							</div>
+							<div class="col col-stats">
+								<div class="numbers">
+									<p class="card-category">Jami xodimlar</p>
+									<h4 class="card-title">{{ total_users }}</h4>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Bugun kelganlar kartasi -->
+			<div class="col-sm-6 col-md-4">
+				<div class="card card-stats card-round">
+					<div class="card-body">
+						<div class="row align-items-center">
+							<div class="col-icon">
+								<div class="icon-big text-center icon-info bubble-shadow-small">
+									<i class="fas fa-user-check"></i>
+								</div>
+							</div>
+							<div class="col col-stats">
+								<div class="numbers">
+									<p class="card-category">Bugun kelganlar</p>
+									<h4 class="card-title">{{ today_in_users }}</h4>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Bugun kechikganlar kartasi -->
+			<div class="col-sm-6 col-md-4">
+				<div class="card card-stats card-round">
+					<div class="card-body">
+						<div class="row align-items-center">
+							<div class="col-icon">
+								<div
+									class="icon-big text-center icon-danger bubble-shadow-small"
+								>
+									<i class="fas fa-clock"></i>
+								</div>
+							</div>
+							<div class="col col-stats">
+								<div class="numbers">
+									<p class="card-category">Bugun kechikganlar</p>
+									<h4 class="card-title">{{ late_users }}</h4>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Kunlik statistik grafik -->
+		<div class="row mt-4">
+			<div class="col-md-12">
+				<div class="card card-round">
+					<div class="card-body">
+						<h4 class="card-title">Kunlik davomat statistikasi</h4>
+						<!-- Grafikni o'z ichiga olgan konteyner -->
+						<canvas
+							id="dailyAttendanceChart"
+							style="width: 100%; height: 300px"
+						></canvas>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="card-body">
+			<h4 class="card-title">Bugung kelganlar</h4>
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>№</th>
+						<th>F.I.Sh</th>
+						<th>Lavozimi</th>
+						<th>Tabel raqami</th>
+						<th>Shtat birligi</th>
+						<th>Kelgan vaqt</th>
+						<th>Ketgan vaqt</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for data in daily_attendance_data %}
+					<tr>
+						<td>{{ forloop.counter }}</td>
+						<td>{{ data.user.name }} {{ data.user.last_name }}</td>
+						<td>{{ data.user.position.name }}</td>
+						<td>{{ data.user.table_number }}</td>
+						<td>{{ data.user.work_type }}</td>
+						<td>
+							{% if data.arrived_time %} {{ data.arrived_time|date:"H:i" }}
+							{%else %} - {% endif %}
+						</td>
+						<td>
+							{% if data.departed_time %} {{ data.departed_time|date:"H:i" }}
+							{%else %} - {% endif %}
+						</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<!-- Grafiklar uchun Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+	// Kunlik statistika uchun grafik
+	const dailyAttendanceData = {
+	    labels: [
+	        {% for stat in daily_stats %}
+	            "{{ stat.date|date:'Y-m-d' }}",
+	        {% endfor %}
+	    ],
+	    datasets: [
+	        {
+	            label: "Keldi",
+	            data: [
+	                {% for stat in daily_stats %}
+	                    {{ stat.in_count }},
+	                {% endfor %}
+	            ],
+	            borderColor: "rgba(54, 162, 235, 1)",
+	            backgroundColor: "rgba(54, 162, 235, 0.2)",
+	            borderWidth: 2,
+	            tension: 0.4,
+	            fill: true
+	        },
+	        {
+	            label: "Kechikganlar",
+	            data: [
+	                {% for stat in daily_stats %}
+	                    {{ stat.late_count }},
+	                {% endfor %}
+	            ],
+	            borderColor: "rgba(255, 99, 132, 1)",
+	            backgroundColor: "rgba(255, 99, 132, 0.2)",
+	            borderWidth: 2,
+	            tension: 0.4,
+	            fill: true
+	        }
+	    ]
+	};
+
+	const ctx = document.getElementById("dailyAttendanceChart").getContext("2d");
+	new Chart(ctx, {
+	    type: "line",
+	    data: dailyAttendanceData,
+	    options: {
+	        responsive: true,
+	        plugins: {
+	            legend: {
+	                position: "top",
+	            },
+	        },
+	        scales: {
+	            y: { beginAtZero: true },
+	        },
+	    },
+	});
+</script>
+{% endblock %}

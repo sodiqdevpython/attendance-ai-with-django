@@ -1,0 +1,83 @@
+{% extends "index.html" %}
+{% block content %}
+<div class="container">
+    <div class="page-inner">
+        <div class="">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3>{{ user.name }} {{ user.last_name }}</h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <img src="{{ user.image.url }}" alt="{{ user.name }}" class="img-thumbnail" width="200">
+                        </div>
+                        <div class="col-md-8">
+                            <h5>Asosiy ma'lumotlar</h5>
+                            <ul class="list-group">
+                                <li class="list-group-item"><strong>Lavozim: </strong> {{ user.position }}</li>
+                                <li class="list-group-item"><strong>Telefon: </strong> +998{{ user.tel_number }}</li>
+                                <li class="list-group-item"><strong>Ish turi: </strong> {{ user.work_type }}</li>
+                                <li class="list-group-item"><strong>Faol kunlar soni: </strong> {{ user.active_day }}
+                                </li>
+                                <li class="list-group-item"><strong>Jami faol soatlar: </strong> 
+                                    {{ user.sum_of_active_hour }}
+                                </li>
+                                <li class="list-group-item"><strong>Yaratilgan: </strong> 
+                                    {{ user.created|date:"d-m-Y H:i" }}
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <hr>
+                    <h5>Ishtirok ma'lumotlari</h5>
+                    {% if attendense_records.exists %}
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Yo'nalish</th>
+                                <th>Yaratilgan vaqt</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in attendense_records %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ record.get_direction_display }}</td>
+                                <td>{{ record.created|date:"d-m-Y H:i" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p class="text-muted">Bu foydalanuvchi uchun ishtirok yozuvlari mavjud emas.</p>
+                    {% endif %}
+                    <hr>
+                    <h5>Kech qolish ma'lumotlari</h5>
+                    {% if late_records.exists %}
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Yaratilgan vaqt</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in late_records %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ record.created|date:"d-m-Y H:i" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p class="text-muted">Bu foydalanuvchi uchun kech qolish yozuvlari mavjud emas.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
