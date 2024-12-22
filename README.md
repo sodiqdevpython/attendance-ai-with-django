@@ -22,3 +22,6 @@
 
 
 ![image](https://github.com/user-attachments/assets/15c1e94e-8128-4ff6-9e6a-4bf478ef1178)
+
+
+Useful link: https://github.com/LegendofKARTIS/dlib-for-FaceRecognition
